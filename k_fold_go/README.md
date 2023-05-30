@@ -1,3 +1,4 @@
-# k_fold_crossval
+# K Fold Cross Validation
+### in : Golang
 
-..test push
+K fold cross validation implementation in Golang

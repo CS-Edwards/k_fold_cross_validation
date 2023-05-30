@@ -1,2 +1,5 @@
-# k_fold_cross_validation
-Implementation of  k-fold cross validation in Golang
+# K Fold Cross Validation
+### in : Golang
+### next: JS
+
+Currenly working in GoLang...
