@@ -5,6 +5,15 @@ import (
 	"fmt"
 )
 
+// Enum-like values for method param in KFoldCrossValidation() to select implementation
+type Method int
+
+const (
+	Sequential Method = iota
+	Concurrent
+	Parallel
+)
+
 type ValueError struct {
 	rowCountX uint
 	rowCountY uint
@@ -55,9 +64,79 @@ func HandleRows(X [][]float64, y []float64) error {
 	return nil
 }
 
+// Serial execution of k fold cross validation
+func kFoldLoop(X [][]float64, y []float64, k uint) {
+	fmt.Println("Run loop implementation")
+
+	var testStart, testEnd, trainStart, trainEnd int
+
+	fold := int(len(X) / int(k))
+	for i := 0; i < int(k); i++ {
+
+		switch i {
+
+		//first iteration
+		case 0:
+			fmt.Println("First iteration")
+			//index 0 to the first fold
+			testStart = 0
+			testEnd = fold
+
+			//first fold to end of the data
+			trainStart = testEnd
+			trainEnd = len(X)
+
+			testDataX := X[testStart:testEnd]
+			trainDataX := X[trainStart:trainEnd]
+
+			testDataY := y[testStart:testEnd]
+			trainDataY := y[trainStart:trainEnd]
+
+			fmt.Println("***INDEXES***")
+			fmt.Printf("\n testStart: %v, testEnd: %v \n", testStart, testEnd)
+			fmt.Printf("\n trainStart: %v, trainEnd: %v \n", trainStart, trainEnd)
+
+			//data for model
+			fmt.Printf("\n Testdata X: %v \n Traindata X: %v \n", testDataX, trainDataX)
+			fmt.Printf("\n Testdata Y: %v \n Traindata Y: %v \n", testDataY, trainDataY)
+
+		//last iteration
+		case int(k - 1):
+			fmt.Println("Last iteration")
+
+		default:
+			fmt.Printf("Iteration: %v \n", i)
+
+		}
+
+	}
+
+	fmt.Printf("DELETE LATER__use fold var:  %v \n", fold)
+}
+
 // k fold cross validation for X: 2D array, y: 1D array
 // TODO: implement k fold
-func kFoldCrossValidation(X [][]float64, y []float64, k uint) {
+// Default method implementation: Serial for loop
+func kFoldCrossValidation(X [][]float64, y []float64, k uint, method Method) {
+
+	//row validation
+	err := HandleRows(X, y)
+
+	if err != nil {
+		fmt.Println("Error: ", err)
+		return
+	}
+
+	switch method {
+	case Concurrent:
+		fmt.Println("Run concurrent implementation")
+
+	case Parallel:
+		fmt.Println("Run parallel implementation")
+
+	default:
+		kFoldLoop(X, y, k)
+	}
 
 	fmt.Printf("This had %v folds", k)
 
@@ -77,18 +156,11 @@ func main() {
 		{1.1, 2.2, 3.3, 4.4},
 	}
 
-	//var y = []float64{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
-	var y = []float64{1, 2.5}
+	var y = []float64{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+	//var y = []float64{1, 2.5}
 
 	fmt.Println("This is the main function for k-fold")
 
-	err := HandleRows(X, y)
-
-	if err != nil {
-		fmt.Println("Error: ", err)
-		return
-	}
-
-	kFoldCrossValidation(X, y, 5)
+	kFoldCrossValidation(X, y, 10, Sequential)
 
 }
